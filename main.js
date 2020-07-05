@@ -34,6 +34,7 @@ block = {
     velocity: 0,
     jumpForce: 23.6,
     amountJump: 0,
+    score: 0,
 
     reload: function() {
         this.velocity += this.gravity;
@@ -53,6 +54,12 @@ block = {
         }
     },
 
+    reset: function() {
+        this.velocity = 0;
+        this.y = 0;
+        this.score = 0;
+    },
+
     design: function() {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.height, this.width);
@@ -67,7 +74,8 @@ obstacles = {
     insert: function() {
         this._obs.push({
             x: width,
-            width: 30 + Math.floor(21 * Math.random()),
+            //width: 30 + Math.floor(21 * Math.random()),
+            width: 50,
             height: 30 + Math.floor(120 * Math.random()),
             color: this.colors[Math.floor(5 * Math.random())]
         });
@@ -88,6 +96,8 @@ obstacles = {
 
             if (block.x < (obs.x + obs.width) && (block.x + block.width) >= obs.x && (block.y + block.height) >= (floor.y - obs.height)) {
                 currentState = states.lose;
+            } else if (obs.x === 0) {
+                block.score++;
             } else if (obs.x <= -obs.width) {
                 this._obs.splice(i, 1);
                 size--;
@@ -116,8 +126,8 @@ function click(event) {
         currentState = states.playing;
     } else if (currentState === states.lose && block.y >= (2 * height)) {
         currentState = states.play;
-        block.velocity = 0;
-        block.y = 0;    
+        obstacles.clear();
+        block.reset();    
     }   
 }
 
@@ -155,8 +165,6 @@ function reload() {
     
     if (currentState === states.playing) {
         obstacles.reload();
-    } else if (currentState === states.lose) {
-        obstacles.clear();
     } 
 }
 
@@ -164,12 +172,28 @@ function design() {
     ctx.fillStyle = "#80daff";
     ctx.fillRect(0, 0, width, height);
     
+    ctx.fillStyle = "#fff";
+    ctx.font = "50px Arial";
+    ctx.fillText(block.score, 30, 68);
+
     if (currentState === states.play) {
         ctx.fillStyle = "green";
         ctx.fillRect(width / 2 - 50, height / 2 - 50, 100, 100);
     } else if (currentState === states.lose) {
         ctx.fillStyle = "red";
         ctx.fillRect(width / 2 - 50, height / 2 - 50, 100, 100);
+        ctx.save();
+        ctx.translate(width / 2, height / 2);
+        ctx.fillStyle = "#fff";
+        
+        if (block.score < 10) {
+            ctx.fillText(block.score, -13, 19);
+        } else if (block.score >= 10 && block.score < 100) {
+            ctx.fillText(block.score, -26, 19);
+        } else {
+            ctx.fillText(block.score, -39, 19);
+        }
+        ctx.restore();
     } else if (currentState === states.playing) {
         obstacles.design();
     }
