@@ -7,6 +7,7 @@ let maxJump = 3;
 let velocity = 6;
 let currentState;
 let record;
+let img;
 
 let states = {
     play: 0,
@@ -28,8 +29,8 @@ let floor = {
 block = {
     x: 50,
     y: 0,
-    height:50,
-    width:50,
+    height:spriteDoll.height,
+    width:spriteDoll.width,
     color: "#ff9239",
     gravity: 1.6,
     velocity: 0,
@@ -68,8 +69,9 @@ block = {
     },
 
     design: function() {
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.height, this.width);
+        // ctx.fillStyle = this.color;
+        // ctx.fillRect(this.x, this.y, this.height, this.width);
+        spriteDoll.design(this.x, this.y);
     }
 },
 
@@ -163,6 +165,9 @@ function main() {
         record = 0;
     }
 
+    img = new Image();
+    img.src = "imagens/sheet.png";
+
     run();
 }
 
@@ -182,9 +187,10 @@ function reload() {
 }
 
 function design() {
-    ctx.fillStyle = "#80daff";
-    ctx.fillRect(0, 0, width, height);
-    
+    // ctx.fillStyle = "#80daff";
+    // ctx.fillRect(0, 0, width, height);
+    bg.design(0, 0);
+        
     ctx.fillStyle = "#fff";
     ctx.font = "50px Arial";
     ctx.fillText(block.score, 30, 68);
