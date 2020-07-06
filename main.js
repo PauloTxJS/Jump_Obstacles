@@ -43,6 +43,8 @@ block = {
     amountJump: 0,
     score: 0,
     rotation: 0,
+    lifes: 3,
+    colliding: false,
 
     reload: function() {
         this.velocity += this.gravity;
@@ -72,6 +74,7 @@ block = {
             record = this.score;
         }
 
+        this.lifes = 3;
         this.score = 0;
     },
 
@@ -113,8 +116,20 @@ obstacles = {
             let obs = this._obs[i];
             obs.x -= velocity;
 
-            if (block.x < (obs.x + obs.width) && (block.x + block.width) >= obs.x && (block.y + block.height) >= (floor.y - obs.height)) {
-                currentState = states.lose;
+            if (!block.colliding && block.x < (obs.x + obs.width) && (block.x + block.width) >= obs.x && (block.y + block.height) >= (floor.y - obs.height)) {
+                
+                block.colliding = true;
+                
+                setTimeout(function() {
+                    block.colliding = false;
+                }, 500);
+                
+                if (block.lifes >= 1) {
+                    block.lifes--;
+                } else {
+                    currentState = states.lose;
+                }
+                
             } else if (obs.x === 0) {
                 block.score++;
             } else if (obs.x <= -obs.width) {
@@ -204,6 +219,7 @@ function design() {
     ctx.fillStyle = "#fff";
     ctx.font = "50px Arial";
     ctx.fillText(block.score, 30, 68);
+    ctx.fillText(block.lifes, 540, 68);
 
     if (currentState == states.playing) {
         obstacles.design();
