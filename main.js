@@ -6,6 +6,7 @@ let frames = 0;
 let maxJump = 3;
 let velocity = 6;
 let currentState;
+let record;
 
 let states = {
     play: 0,
@@ -57,6 +58,12 @@ block = {
     reset: function() {
         this.velocity = 0;
         this.y = 0;
+
+        if (this.score > record) {
+            localStorage.setItem("record", this.score);
+            record = this.score;
+        }
+
         this.score = 0;
     },
 
@@ -150,6 +157,12 @@ function main() {
     document.addEventListener("mousedown", click);
 
     currentState = states.play;
+    record = localStorage.getItem("record");
+
+    if (record === null) {
+        record = 0;
+    }
+
     run();
 }
 
@@ -185,6 +198,16 @@ function design() {
         ctx.save();
         ctx.translate(width / 2, height / 2);
         ctx.fillStyle = "#fff";
+
+        if (block.score > record) {
+            ctx.fillText("New Record!", -150, -65);
+        } else if (record < 10){
+            ctx.fillText(`Record ${record}`, -99, -65);
+        } else if (record >= 10 && record < 100) {
+            ctx.fillText(`Record ${record}`, -112, -65);
+        } else {
+            ctx.fillText(`Record ${record}`, -125, -65);
+        }
         
         if (block.score < 10) {
             ctx.fillText(block.score, -13, 19);
