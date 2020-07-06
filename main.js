@@ -90,19 +90,18 @@ block = {
 
 obstacles = {
     _obs: [],
-    colors: ["#ffbc1c", "#ff1c1c", "#ff85e1", "#52a7ff", "#78ff5d"],
+    _sprites: [redObstacle, pinkObstacle, blueObstacle, greenObstacle, yellowObstacle],
     timerInsert: 0,
 
     insert: function() {
         this._obs.push({
             x: width,
-            //width: 30 + Math.floor(21 * Math.random()),
+            y: floor.y - Math.floor(20 + Math.random() * 100),
             width: 50,
-            height: 30 + Math.floor(120 * Math.random()),
-            color: this.colors[Math.floor(5 * Math.random())]
+            sprite: this._sprites[Math.floor(this._sprites.length * Math.random())]
         });
 
-        this.timerInsert = 30 + Math.floor(21 * Math.random());
+        this.timerInsert = 30 + Math.floor(20 * Math.random());
     },
 
     reload: function() {
@@ -116,8 +115,9 @@ obstacles = {
             let obs = this._obs[i];
             obs.x -= velocity;
 
-            if (!block.colliding && block.x < (obs.x + obs.width) && (block.x + block.width) >= obs.x && (block.y + block.height) >= (floor.y - obs.height)) {
-                
+            if (!block.colliding && block.x < (obs.x + obs.width) && (block.x + block.width) 
+                >= obs.x && (block.y + block.height) >= (obs.y)) {
+                //floor.y - obs.height
                 block.colliding = true;
                 
                 setTimeout(function() {
@@ -146,9 +146,9 @@ obstacles = {
 
     design: function() {
         for (let i = 0, size = this._obs.length; i < size; i++) {
-            let obs = this._obs[i];
-            ctx.fillStyle = obs.color;
-            ctx.fillRect(obs.x, floor.y - obs.height, obs.width, obs.height);
+            let obj = this._obs[i];
+            
+            obj.sprite.design(obj.x, obj.y);
         }
     }
 };
@@ -218,8 +218,8 @@ function design() {
         
     ctx.fillStyle = "#fff";
     ctx.font = "50px Arial";
-    ctx.fillText(block.score, 30, 68);
-    ctx.fillText(block.lifes, 540, 68);
+    ctx.fillText(block.lifes, 30, 68);
+    ctx.fillText(block.score, 540, 68);
 
     if (currentState == states.playing) {
         obstacles.design();
