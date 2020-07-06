@@ -13,3 +13,9 @@ function Sprite(x, y, width, height) {
 
 let bg = new Sprite(0,0, 600, 600);
 let spriteDoll = new Sprite(618, 16, 87, 87);
+
+let lose = new Sprite(603, 478, 397, 358);
+let play = new Sprite(603, 127, 397, 347);
+let newN = new Sprite(68, 721, 287, 93);
+let spriteRecord = new Sprite(28, 879, 441, 95);
+let spriteFloor = new Sprite(0, 604, 600, 54);

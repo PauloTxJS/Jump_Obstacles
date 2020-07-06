@@ -2,7 +2,6 @@ let canvas;
 let ctx;
 let height;
 let width;
-let frames = 0;
 let maxJump = 3;
 let velocity = 6;
 let currentState;
@@ -17,30 +16,38 @@ let states = {
 
 let floor = {
     y: 550,
+    x: 0,
     height: 50,
-    color: "#e8da78",
+
+    reload: function() {
+        this.x -= velocity;
+        if (this.x <= -30) {
+            this.x = 0;
+        }
+    },
 
     design: function(){
-        ctx.fillStyle = this.color;
-        ctx.fillRect(0, this.y, width, this.height);
+        spriteFloor.design(this.x, this.y);
+        spriteFloor.design(this.x + spriteFloor.width, this.y);
     }
-}
+}   
 
 block = {
     x: 50,
     y: 0,
     height:spriteDoll.height,
     width:spriteDoll.width,
-    color: "#ff9239",
     gravity: 1.6,
     velocity: 0,
     jumpForce: 23.6,
     amountJump: 0,
     score: 0,
+    rotation: 0,
 
     reload: function() {
         this.velocity += this.gravity;
         this.y += this.velocity;
+        this.rotation += Math.PI / 180 * velocity;
 
         if (this.y > (floor.y - this.height) && currentState !== states.lose) {
             this.y = floor.y - this.height;
@@ -69,9 +76,12 @@ block = {
     },
 
     design: function() {
-        // ctx.fillStyle = this.color;
-        // ctx.fillRect(this.x, this.y, this.height, this.width);
-        spriteDoll.design(this.x, this.y);
+        ctx.save();
+        ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+        ctx.rotate(this.rotation);
+        spriteDoll.design(-this.width / 2, -this.height / 2);
+        ctx.restore();
+        
     }
 },
 
@@ -178,58 +188,51 @@ function run() {
 }
 
 function reload() {
-    frames++;
-    block.reload();
-    
+        
     if (currentState === states.playing) {
         obstacles.reload();
     } 
+    
+    floor.reload();
+    block.reload();
 }
 
 function design() {
-    // ctx.fillStyle = "#80daff";
-    // ctx.fillRect(0, 0, width, height);
+
     bg.design(0, 0);
         
     ctx.fillStyle = "#fff";
     ctx.font = "50px Arial";
     ctx.fillText(block.score, 30, 68);
 
-    if (currentState === states.play) {
-        ctx.fillStyle = "green";
-        ctx.fillRect(width / 2 - 50, height / 2 - 50, 100, 100);
-    } else if (currentState === states.lose) {
-        ctx.fillStyle = "red";
-        ctx.fillRect(width / 2 - 50, height / 2 - 50, 100, 100);
-        ctx.save();
-        ctx.translate(width / 2, height / 2);
-        ctx.fillStyle = "#fff";
-
-        if (block.score > record) {
-            ctx.fillText("New Record!", -150, -65);
-        } else if (record < 10){
-            ctx.fillText(`Record ${record}`, -99, -65);
-        } else if (record >= 10 && record < 100) {
-            ctx.fillText(`Record ${record}`, -112, -65);
-        } else {
-            ctx.fillText(`Record ${record}`, -125, -65);
-        }
-        
-        if (block.score < 10) {
-            ctx.fillText(block.score, -13, 19);
-        } else if (block.score >= 10 && block.score < 100) {
-            ctx.fillText(block.score, -26, 19);
-        } else {
-            ctx.fillText(block.score, -39, 19);
-        }
-        ctx.restore();
-    } else if (currentState === states.playing) {
+    if (currentState == states.playing) {
         obstacles.design();
     }
-    
+
     floor.design();
     block.design();
 
+    if (currentState == states.play) {
+        play.design(width / 2 - play.width / 2, height / 2 - play.height / 2);
+    }
+
+    if (currentState == states.lose) {
+        lose.design(width / 2 - lose.width / 2, height / 2 - lose.height / 2 - 
+            spriteRecord.height / 2);
+
+        spriteRecord.design(width / 2 - spriteRecord.width / 2, height / 2 + 
+            lose.height / 2 - spriteRecord.height / 2 - 25);
+        
+        ctx.fillStyle = "#fff";    
+        ctx.fillText(block.score, 375, 390);
+        
+        if (block.score > record) {
+            newN.design(width / 2 - 180, height / 2 + 30);
+            ctx.fillText(block.score, 420, 470);
+        } else {
+            ctx.fillText(record, 415, 470);
+        }
+    }
 }
 
 main();
